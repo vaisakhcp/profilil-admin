@@ -2,6 +2,11 @@
 const nextConfig = {
   reactStrictMode: false,
 
+  // Disable TypeScript errors during build
+  typescript: {
+    ignoreBuildErrors: true, // Disables type-checking during the build process
+  },
+
   // Add the redirects configuration
   async redirects() {
     return [

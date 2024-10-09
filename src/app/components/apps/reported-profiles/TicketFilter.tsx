@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios'; // Using axios to fetch the API data
-
+import { getReportedProfiles } from '../../../api/profiles';
 const TicketFilter = () => {
   const [profiles, setProfiles] = useState<any[]>([]); // State to store the profiles
   const [totalProfiles, setTotalProfiles] = useState(0);
@@ -12,7 +11,7 @@ const TicketFilter = () => {
     // Fetch the profiles from the API
     const fetchProfiles = async () => {
       try {
-        const response = await axios.get('/api/app/profile-escalation'); // API call
+        const response = await getReportedProfiles;
         const data = response.data;
 
         // Set the profiles and calculate counts

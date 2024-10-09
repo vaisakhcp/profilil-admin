@@ -58,7 +58,7 @@ const TicketListing: React.FC<TicketListingProps> = ({
   // Filter profiles based on the search term
   useEffect(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const filtered = profiles.filter((profile: any) =>
+    const filtered = profiles?.filter((profile: any) =>
       profile.name.toLowerCase().includes(lowercasedSearchTerm)
     );
     setFilteredProfiles(filtered);

@@ -143,7 +143,7 @@ const Demos: DemoTypes[] = [
   {
     type: false,
     img: img6,
-    name: 'Featured Profiles',
+    name: 'Reported Profiles',
     link: '/apps/reported-profiles',
     include: 'Application',
   },

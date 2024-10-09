@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table, TextInput, Tooltip, Button } from 'flowbite-react';
 import { Icon } from '@iconify/react/dist/iconify.js';
 import axios from 'axios';
-
+import { getReportedProfiles } from '@/app/api/profiles';
 const TicketListing = ({ setSelectedProfile }) => {
   const [profiles, setProfiles] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,10 +19,8 @@ const TicketListing = ({ setSelectedProfile }) => {
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const response = await axios.get(
-          'http://157.245.105.48/api/app/profile-escalation'
-        );
-        const data = response.data.map((item: any) => ({
+        const response = await getReportedProfiles(); // Call the function correctly
+        const data = response?.data.map((item: any) => ({
           uniqueName: item.profile.uniqueName || 'N/A',
           phoneNumber: item.profile.phoneNumber || 'N/A',
           emailId: item.profile.emailId || 'N/A',
@@ -38,11 +36,10 @@ const TicketListing = ({ setSelectedProfile }) => {
 
     fetchProfiles();
   }, []);
-
   // Filter profiles based on the search term
   useEffect(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const filtered = profiles.filter((profile: any) =>
+    const filtered = profiles?.filter((profile: any) =>
       profile.uniqueName.toLowerCase().includes(lowercasedSearchTerm)
     );
     setFilteredProfiles(filtered);
@@ -81,7 +78,7 @@ const TicketListing = ({ setSelectedProfile }) => {
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className='divide-y divide-border dark:divide-darkborder'>
-              {filteredProfiles.map((profile: any, index) => (
+              {filteredProfiles?.map((profile: any, index) => (
                 <Table.Row
                   key={index}
                   className='cursor-pointer'

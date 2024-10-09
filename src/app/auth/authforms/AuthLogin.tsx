@@ -4,11 +4,12 @@ import { Button, TextInput, Spinner } from 'flowbite-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import axios from '../../../utils/axios';
+import { getAuthenticated } from '../../api/auth';
 
 const AuthLogin = () => {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -20,22 +21,16 @@ const AuthLogin = () => {
     };
 
     try {
-      const response = await fetch(
-        'http://157.245.105.48/api/app/authentication/authenticate',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        }
-      );
+      // Call the getAuthenticated function from the API
+      const data = await getAuthenticated(requestBody);
 
-      if (!response.ok) {
+      // Debug: Log the full response to check its structure
+      console.log('Response Data:', data);
+
+      // Check if token exists in response data
+      if (!data || !data.token) {
         throw new Error('Failed to authenticate');
       }
-
-      const data = await response.json();
 
       // Save the token in localStorage
       localStorage.setItem('authToken', data.token);
@@ -45,7 +40,7 @@ const AuthLogin = () => {
     } catch (error) {
       console.error(error);
       alert('Authentication failed. Please try again.');
-      setLoading(false);
+      setLoading(false); // Reset loading state
     }
   };
 

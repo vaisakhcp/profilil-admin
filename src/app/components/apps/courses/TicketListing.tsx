@@ -37,12 +37,12 @@ const TicketListing: React.FC<TicketListingProps> = ({
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const token = localStorage.getItem('authToken'); // Get the token from localStorage
+        const token = localStorage.getItem('authToken');
         const response = await axios.get(
           'http://157.245.105.48/api/app/course',
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Add the Authorization header
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -64,11 +64,11 @@ const TicketListing: React.FC<TicketListingProps> = ({
 
     fetchProfiles();
   }, []);
-
+  A;
   // Filter profiles based on the search term
   useEffect(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const filtered = profiles.filter((profile: any) =>
+    const filtered = profiles?.filter((profile: any) =>
       profile.name.toLowerCase().includes(lowercasedSearchTerm)
     );
     setFilteredProfiles(filtered);

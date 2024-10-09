@@ -1,4 +1,4 @@
-import TicketsApp from '@/app/components/apps/featured-profiles';
+import TicketsApp from '@/app/components/apps/reported-profiles';
 import BreadcrumbComp from '../../layout/shared/breadcrumb/BreadcrumbComp';
 import type { Metadata } from 'next';
 export const metadata: Metadata = {

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import axiosServices from '../../../../utils/axios';
+import { fetchProfiles } from '../../../api/profiles';
+
 const TicketFilter = () => {
   const [profiles, setProfiles] = useState<any[]>([]); // State to store the profiles
   const [totalProfiles, setTotalProfiles] = useState(0);
@@ -12,19 +14,10 @@ const TicketFilter = () => {
     // Fetch the profiles from the API
     const fetchProfiles = async () => {
       try {
-        console.log('Attempting to fetch profiles...');
-
-        const response = await axiosServices.get('/featured-profile');
-        console.log('API response:', response); // Log the full API response
-
-        const data = response.data;
-        console.log('Fetched data:', data); // Log the fetched data
-
-        // Set the profiles and calculate counts
+        const response = await fetchProfiles;
+        const data = response?.data;
         setProfiles(data);
         setTotalProfiles(data.length);
-
-        // Filter profiles and set state accordingly
         const featured = data.filter((profile: any) => profile.type === 1);
         const suspended = data.filter(
           (profile: any) => profile.profile.suspended

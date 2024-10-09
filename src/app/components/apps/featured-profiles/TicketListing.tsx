@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Table, TextInput, Tooltip, Button } from 'flowbite-react';
+import { Table, TextInput, Tooltip, Button, Spinner } from 'flowbite-react'; // Import Spinner
 import { Icon } from '@iconify/react/dist/iconify.js';
-import axios from 'axios';
+import { fetchProfiles } from '../../../api/profiles';
 
 const TicketListing = ({ setSelectedProfile }) => {
   const [profiles, setProfiles] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProfiles, setFilteredProfiles] = useState([]);
+  const [loading, setLoading] = useState(true); // State for loading
   const [tableHeaders] = useState([
     'Unique Name',
     'Phone Number',
@@ -15,34 +16,40 @@ const TicketListing = ({ setSelectedProfile }) => {
     'Updated At',
   ]);
 
-  // Fetch profiles from the API
   useEffect(() => {
-    const fetchProfiles = async () => {
+    const getFeaturedProfiles = async () => {
       try {
-        const response = await axios.get(
-          'http://157.245.105.48/api/app/featured-profile'
-        );
-        const data = response.data.map((item: any) => ({
-          uniqueName: item.profile.uniqueName || 'N/A',
-          phoneNumber: item.profile.phoneNumber || 'N/A',
-          emailId: item.profile.emailId || 'N/A',
-          createdAt: new Date(item.profile.createdAt),
-          updatedAt: new Date(item.profile.updatedAt),
-        }));
-        setProfiles(data);
-        setFilteredProfiles(data);
+        const response = await fetchProfiles();
+
+        // Ensure that response and response.data are valid and are arrays
+        if (response && Array.isArray(response)) {
+          const data = response.map((item: any) => ({
+            uniqueName: item.profile?.uniqueName || 'N/A',
+            phoneNumber: item.profile?.phoneNumber || 'N/A',
+            emailId: item.profile?.emailId || 'N/A',
+            createdAt: new Date(item.profile?.createdAt),
+            updatedAt: new Date(item.profile?.updatedAt),
+          }));
+
+          setProfiles(data);
+          setFilteredProfiles(data);
+        } else {
+          console.error('Error: Data is not an array');
+        }
       } catch (error) {
         console.error('Error fetching profiles:', error);
+      } finally {
+        setLoading(false); // Stop loading once data is fetched
       }
     };
 
-    fetchProfiles();
+    getFeaturedProfiles();
   }, []);
 
   // Filter profiles based on the search term
   useEffect(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const filtered = profiles.filter((profile: any) =>
+    const filtered = profiles?.filter((profile: any) =>
       profile.uniqueName.toLowerCase().includes(lowercasedSearchTerm)
     );
     setFilteredProfiles(filtered);
@@ -51,6 +58,15 @@ const TicketListing = ({ setSelectedProfile }) => {
   const handleRowClick = (profile: any) => {
     setSelectedProfile(profile); // Set the selected profile when the row is clicked
   };
+
+  // Show spinner if loading is true, otherwise show the table
+  if (loading) {
+    return (
+      <div className='flex justify-center items-center min-h-screen'>
+        <Spinner size='xl' aria-label='Loading profiles...' />
+      </div>
+    );
+  }
 
   return (
     <>
