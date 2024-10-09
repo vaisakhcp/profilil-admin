@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Table, TextInput, Tooltip, Button, Spinner } from 'flowbite-react'; // Import Spinner
+import {
+  Table,
+  TextInput,
+  Tooltip,
+  Button,
+  Spinner,
+  Pagination,
+} from 'flowbite-react'; // Import Pagination
 import { Icon } from '@iconify/react/dist/iconify.js';
 import { fetchProfiles } from '../../../api/profiles';
 
@@ -8,6 +15,8 @@ const TicketListing = ({ setSelectedProfile }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [loading, setLoading] = useState(true); // State for loading
+  const [currentPage, setCurrentPage] = useState(1); // State for pagination
+  const itemsPerPage = 10; // Number of items per page
   const [tableHeaders] = useState([
     'Unique Name',
     'Phone Number',
@@ -53,7 +62,17 @@ const TicketListing = ({ setSelectedProfile }) => {
       profile.uniqueName.toLowerCase().includes(lowercasedSearchTerm)
     );
     setFilteredProfiles(filtered);
+    setCurrentPage(1); // Reset to first page on new search
   }, [searchTerm, profiles]);
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProfiles.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+  const totalPages = Math.ceil(filteredProfiles.length / itemsPerPage);
 
   const handleRowClick = (profile: any) => {
     setSelectedProfile(profile); // Set the selected profile when the row is clicked
@@ -97,7 +116,7 @@ const TicketListing = ({ setSelectedProfile }) => {
               </Table.HeadCell>
             </Table.Head>
             <Table.Body className='divide-y divide-border dark:divide-darkborder'>
-              {filteredProfiles.map((profile: any, index) => (
+              {currentItems.map((profile: any, index) => (
                 <Table.Row
                   key={index}
                   className='cursor-pointer'
@@ -153,6 +172,22 @@ const TicketListing = ({ setSelectedProfile }) => {
               ))}
             </Table.Body>
           </Table>
+
+          {/* Pagination Controls */}
+          <div className='flex justify-between items-center mt-4'>
+            <span>
+              Showing {indexOfFirstItem + 1} to{' '}
+              {indexOfLastItem > filteredProfiles.length
+                ? filteredProfiles.length
+                : indexOfLastItem}{' '}
+              of {filteredProfiles.length} entries
+            </span>
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
         </div>
       </div>
     </>

@@ -6,9 +6,10 @@ import {
   Button,
   Alert,
   Pagination,
+  Modal,
 } from 'flowbite-react';
 import { Icon } from '@iconify/react/dist/iconify.js';
-import { getAllCollages } from '@/app/api/profiles';
+import { getAllCollages, deleteProfileById } from '@/app/api/profiles'; // Import deleteProfileById
 
 const TicketListing = ({ setSelectedProfile }) => {
   const [profiles, setProfiles] = useState([]);
@@ -16,6 +17,8 @@ const TicketListing = ({ setSelectedProfile }) => {
   const [filteredProfiles, setFilteredProfiles] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(5); // Number of items per page
+  const [selectedProfileId, setSelectedProfileId] = useState(null); // To track which profile to delete
+  const [showModal, setShowModal] = useState(false); // State to show the confirmation modal
 
   const [tableHeaders] = useState([
     'Batch Start Year',
@@ -78,6 +81,19 @@ const TicketListing = ({ setSelectedProfile }) => {
     setSelectedProfile(profile); // Set the selected profile when the row is clicked
   };
 
+  const handleDelete = async () => {
+    try {
+      await deleteProfileById(selectedProfileId); // Call the delete API
+      setProfiles((prevProfiles) =>
+        prevProfiles.filter((p) => p.profileId !== selectedProfileId)
+      ); // Remove the profile from the list
+      setShowModal(false); // Close modal
+      setSelectedProfileId(null); // Clear selected profile ID
+    } catch (error) {
+      console.error('Error deleting profile:', error);
+    }
+  };
+
   return (
     <>
       <div className='my-6'>
@@ -98,9 +114,7 @@ const TicketListing = ({ setSelectedProfile }) => {
             </Alert>
           ) : (
             <>
-              <div
-                className='overflow-x-auto' // Add scrollable container with max height
-              >
+              <div className='overflow-x-auto'>
                 <Table>
                   <Table.Head>
                     {tableHeaders.map((header) => (
@@ -139,9 +153,8 @@ const TicketListing = ({ setSelectedProfile }) => {
                               color={'transparent'}
                               onClick={(e) => {
                                 e.stopPropagation(); // Prevent row click
-                                console.log(
-                                  `Delete profile with ID: ${profile.profileId}`
-                                );
+                                setSelectedProfileId(profile.profileId); // Set profile ID to delete
+                                setShowModal(true); // Show confirmation modal
                               }}
                             >
                               <Icon
@@ -176,6 +189,20 @@ const TicketListing = ({ setSelectedProfile }) => {
           )}
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      <Modal show={showModal} onClose={() => setShowModal(false)}>
+        <Modal.Header>Confirm Deletion</Modal.Header>
+        <Modal.Body>
+          <p>Are you sure you want to delete this profile?</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color='danger' onClick={handleDelete}>
+            Delete
+          </Button>
+          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

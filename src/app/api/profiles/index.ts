@@ -60,6 +60,23 @@ export const getAllCollages = async () => {
     console.error('Error fetching profiles:', error);
   }
 };
+export const deleteProfileById = async (id: string) => {
+  try {
+    const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+    const response = await axiosServices.delete(
+      `/education-institution-info/${id}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add the Authorization header
+        },
+      }
+    );
+    return response.data; // Return success response
+  } catch (error) {
+    console.error('Error deleting profile:', error);
+    throw error; // Rethrow the error to be handled by the calling function
+  }
+};
 // Function to fetch reported profiles from the API
 export const getAllSpecializations = async () => {
   try {
