@@ -60,3 +60,18 @@ export const getAllCollages = async () => {
     console.error('Error fetching profiles:', error);
   }
 };
+// Function to fetch reported profiles from the API
+export const getAllSpecializations = async () => {
+  try {
+    const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
+    const response = await axiosServices.get('/specialization', {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add the Authorization header
+      },
+    });
+    console.log('list', response.data);
+    return response.data; // Return the fetched data
+  } catch (error) {
+    console.error('Error fetching profiles:', error);
+  }
+};

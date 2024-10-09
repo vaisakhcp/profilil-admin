@@ -1,4 +1,4 @@
-import CreateTicketForm from '@/app/components/apps/featured-profiles/CreateTicketForm';
+import CreateTicketForm from '@/app/components/apps/specialization/CreateTicketForm';
 import type { Metadata } from 'next';
 import BreadcrumbComp from '@/app/(DashboardLayout)/layout/shared/breadcrumb/BreadcrumbComp';
 import { TicketProvider } from '@/app/context/TicketContext/index';
