@@ -84,62 +84,6 @@ const TicketListing = ({ setSelectedProfile }) => {
                   Action
                 </Table.HeadCell>
               </Table.Head>
-              <Table.Body className='divide-y divide-border dark:divide-darkborder'>
-                {filteredProfiles?.map((profile: any, index) => (
-                  <Table.Row
-                    key={index}
-                    className='cursor-pointer'
-                    onClick={() => handleRowClick(profile)}
-                  >
-                    <Table.Cell className='max-w-md'>
-                      <div className='flex items-center gap-3'>
-                        <div>
-                          <h6 className='text-base'>{profile.uniqueName}</h6>
-                        </div>
-                      </div>
-                    </Table.Cell>
-                    <Table.Cell className='whitespace-nowrap'>
-                      {profile.phoneNumber}
-                    </Table.Cell>
-                    <Table.Cell className='whitespace-nowrap'>
-                      {profile.emailId}
-                    </Table.Cell>
-                    <Table.Cell className='whitespace-nowrap'>
-                      <p className='text-sm text-darklink'>
-                        {new Date(profile.createdAt).toLocaleDateString()}
-                      </p>
-                    </Table.Cell>
-                    <Table.Cell className='whitespace-nowrap'>
-                      <p className='text-sm text-darklink'>
-                        {new Date(profile.updatedAt).toLocaleDateString()}
-                      </p>
-                    </Table.Cell>
-                    <Table.Cell>
-                      <Tooltip
-                        content='Delete Profile'
-                        placement='bottom'
-                        arrow={false}
-                      >
-                        <Button
-                          className='btn-circle ms-auto'
-                          color={'transparent'}
-                        >
-                          <Icon
-                            icon='solar:trash-bin-minimalistic-outline'
-                            height='18'
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent row click
-                              console.log(
-                                `Delete profile with unique name: ${profile.uniqueName}`
-                              );
-                            }}
-                          />
-                        </Button>
-                      </Tooltip>
-                    </Table.Cell>
-                  </Table.Row>
-                ))}
-              </Table.Body>
             </Table>
           )}
         </div>

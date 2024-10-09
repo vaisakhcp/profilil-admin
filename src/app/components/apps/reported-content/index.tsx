@@ -2,9 +2,9 @@
 import React, { useState } from 'react';
 
 import CardBox from '@/app/components/shared/CardBox';
-import TicketFilter from '@/app/components/apps/collages/TicketFilter';
-import TicketListing from '@/app/components/apps/collages/TicketListing';
-import Details from '@/app/components/apps/collages/details';
+import TicketFilter from '@/app/components/apps/reported-profiles/TicketFilter';
+import TicketListing from '@/app/components/apps/reported-profiles/TicketListing';
+import Details from '@/app/components/apps/reported-profiles/details';
 import { TicketProvider } from '@/app/context/TicketContext/index';
 
 const TicketsApp = () => {

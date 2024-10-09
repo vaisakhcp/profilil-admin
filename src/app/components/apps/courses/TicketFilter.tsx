@@ -13,11 +13,14 @@ const TicketFilter = () => {
     const fetchProfiles = async () => {
       try {
         const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
-        const response = await axios.get('/api/app/education-institution', {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add the Authorization header
-          },
-        }); // API call
+        const response = await axios.get(
+          '/api/app/education-institution-info',
+          {
+            headers: {
+              Authorization: `Bearer ${token}`, // Add the Authorization header
+            },
+          }
+        ); // API call
 
         const data = response.data;
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios'; // Using axios to fetch the API data
-
+import { getAllCollages } from '../../../api/profiles';
 const TicketFilter = () => {
   const [profiles, setProfiles] = useState<any[]>([]); // State to store the profiles
   const [totalProfiles, setTotalProfiles] = useState(0);
@@ -12,15 +11,9 @@ const TicketFilter = () => {
     // Fetch the profiles from the API
     const fetchProfiles = async () => {
       try {
-        const token = localStorage.getItem('authToken'); // Retrieve the token from localStorage
-        const response = await axios.get('/api/app/education-institution', {
-          headers: {
-            Authorization: `Bearer ${token}`, // Add the Authorization header
-          },
-        }); // API call
-
-        const data = response.data;
-
+        const response = await getAllCollages;
+        const data = response?.data;
+        console.log('here', data);
         // Set the profiles and calculate counts
         setProfiles(data);
         setTotalProfiles(data.length);
@@ -51,7 +44,7 @@ const TicketFilter = () => {
             onClick={() => console.log('Total Profiles clicked')}
           >
             <h3 className='text-primary text-2xl'>{totalProfiles}</h3>
-            <h6 className='text-base text-primary'>Total Courses</h6>
+            <h6 className='text-base text-primary'>Total Profiles</h6>
           </div>
         </div>
 
@@ -62,7 +55,7 @@ const TicketFilter = () => {
             onClick={() => console.log('Featured Profiles clicked')}
           >
             <h3 className='text-warning text-2xl'>{featuredProfiles}</h3>
-            <h6 className='text-base text-warning'>Total Verified Courses</h6>
+            <h6 className='text-base text-warning'>Total Featured Profiles</h6>
           </div>
         </div>
 
@@ -73,7 +66,7 @@ const TicketFilter = () => {
             onClick={() => console.log('Suspended Profiles clicked')}
           >
             <h3 className='text-success text-2xl'>{suspendedProfiles}</h3>
-            <h6 className='text-base text-success'>Total Unverified Courses</h6>
+            <h6 className='text-base text-success'>Suspended Profiles</h6>
           </div>
         </div>
 
@@ -84,7 +77,7 @@ const TicketFilter = () => {
             onClick={() => console.log('Deleted Profiles clicked')}
           >
             <h3 className='text-error text-2xl'>{deletedProfiles}</h3>
-            <h6 className='text-base text-error'>Deleted Courses</h6>
+            <h6 className='text-base text-error'>Deleted Profiles</h6>
           </div>
         </div>
       </div>

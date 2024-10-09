@@ -1,52 +1,50 @@
 import { useState, useEffect } from 'react';
-import { Table, TextInput, Tooltip, Button, Pagination } from 'flowbite-react';
+import {
+  Table,
+  TextInput,
+  Tooltip,
+  Button,
+  Alert,
+  Pagination,
+} from 'flowbite-react';
 import { Icon } from '@iconify/react/dist/iconify.js';
-import axios from 'axios';
-interface TicketListingProps {
-  setSelectedProfile: (profile: any) => void; // Replace 'any' with the actual type if possible
-}
-const TicketListing: React.FC<TicketListingProps> = ({
-  setSelectedProfile,
-}) => {
-  const [profiles, setProfiles] = useState([]); // All profiles from API
-  const [filteredProfiles, setFilteredProfiles] = useState([]); // Filtered profiles
-  const [searchTerm, setSearchTerm] = useState(''); // For searching
+import { getAllCollages } from '@/app/api/profiles';
+
+const TicketListing = ({ setSelectedProfile }) => {
+  const [profiles, setProfiles] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredProfiles, setFilteredProfiles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(5); // Number of items per page
+
   const [tableHeaders] = useState([
-    'ID',
-    'Name',
+    'Batch Start Year',
+    'Batch End Year',
+    'Education Institution ID',
+    'Course ID',
+    'Specialization ID',
+    'Profile ID',
     'Created At',
     'Updated At',
-    'Verified',
-  ]); // Table headers
-
-  // Pagination states
-  const [currentPage, setCurrentPage] = useState(1); // Current page
-  const [profilesPerPage] = useState(10); // Profiles per page (change this to adjust how many profiles to show per page)
+  ]);
 
   // Fetch profiles from the API
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const token = localStorage.getItem('authToken'); // Get the token from localStorage
-        const response = await axios.get(
-          'http://157.245.105.48/api/app/education-institution',
-          {
-            headers: {
-              Authorization: `Bearer ${token}`, // Add the Authorization header
-            },
-          }
-        );
-
-        const data = response.data.map((item: any) => ({
-          id: item.id || 'N/A',
-          name: item.name || 'N/A',
-          createdAt: new Date(item.createdAt),
-          updatedAt: new Date(item.updatedAt),
-          verified: item.verified ? 'Yes' : 'No',
+        const response = await getAllCollages(); // Fetch API data
+        const data = response.map((item: any) => ({
+          batchStartYear: item.batchStartYear,
+          batchEndYear: item.batchEndYear || 'N/A',
+          educationInstitutionId: item.educationInstitutionId,
+          courseId: item.courseId,
+          specializationId: item.specializationId,
+          profileId: item.profileId,
+          createdAt: new Date(item.createdAt).toLocaleDateString(),
+          updatedAt: new Date(item.updatedAt).toLocaleDateString(),
         }));
-
-        setProfiles(data); // Store profiles in state
-        setFilteredProfiles(data); // Initially show all profiles
+        setProfiles(data);
+        setFilteredProfiles(data);
       } catch (error) {
         console.error('Error fetching profiles:', error);
       }
@@ -58,24 +56,23 @@ const TicketListing: React.FC<TicketListingProps> = ({
   // Filter profiles based on the search term
   useEffect(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const filtered = profiles?.filter((profile: any) =>
-      profile.name.toLowerCase().includes(lowercasedSearchTerm)
+    const filtered = profiles.filter((profile: any) =>
+      profile.educationInstitutionId
+        .toLowerCase()
+        .includes(lowercasedSearchTerm)
     );
     setFilteredProfiles(filtered);
+    setCurrentPage(1); // Reset to the first page when searching
   }, [searchTerm, profiles]);
 
-  // Get current profiles for the current page
-  const indexOfLastProfile = currentPage * profilesPerPage;
-  const indexOfFirstProfile = indexOfLastProfile - profilesPerPage;
-  const currentProfiles = filteredProfiles.slice(
-    indexOfFirstProfile,
-    indexOfLastProfile
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredProfiles.slice(
+    indexOfFirstItem,
+    indexOfLastItem
   );
-
-  // Handle changing pages
-  const handlePageChange = (pageNumber: number) => {
-    setCurrentPage(pageNumber);
-  };
+  const totalPages = Math.ceil(filteredProfiles.length / itemsPerPage);
 
   const handleRowClick = (profile: any) => {
     setSelectedProfile(profile); // Set the selected profile when the row is clicked
@@ -90,94 +87,93 @@ const TicketListing: React.FC<TicketListingProps> = ({
             sizing='md'
             className='form-control sm:max-w-60 max-w-full w-full'
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder='Search Profiles'
+            placeholder='Search by Institution ID'
             icon={() => <Icon icon='solar:magnifer-line-duotone' height={18} />}
           />
         </div>
-
-        {/* Profile Table */}
-        <div className='overflow-x-auto'>
-          <Table>
-            <Table.Head>
-              {tableHeaders.map((header) => (
-                <Table.HeadCell
-                  key={header}
-                  className='text-base font-semibold py-3 whitespace-nowrap'
-                >
-                  {header}
-                </Table.HeadCell>
-              ))}
-              <Table.HeadCell className='text-base font-semibold py-3 text-end'>
-                Action
-              </Table.HeadCell>
-            </Table.Head>
-            <Table.Body className='divide-y divide-border dark:divide-darkborder'>
-              {currentProfiles.map((profile: any, index) => (
-                <Table.Row
-                  key={index}
-                  className='cursor-pointer'
-                  onClick={() => handleRowClick(profile)}
-                >
-                  <Table.Cell className='max-w-md'>
-                    <div className='flex items-center gap-3'>
-                      <div>
-                        <h6 className='text-base'>{profile.id}</h6>{' '}
-                        {/* Display ID */}
-                      </div>
-                    </div>
-                  </Table.Cell>
-                  <Table.Cell className='whitespace-nowrap'>
-                    {profile.name} {/* Display Name */}
-                  </Table.Cell>
-                  <Table.Cell className='whitespace-nowrap'>
-                    <p className='text-sm text-darklink'>
-                      {profile.createdAt.toLocaleDateString()}{' '}
-                      {/* Display Created At */}
-                    </p>
-                  </Table.Cell>
-                  <Table.Cell className='whitespace-nowrap'>
-                    <p className='text-sm text-darklink'>
-                      {profile.updatedAt.toLocaleDateString()}{' '}
-                      {/* Display Updated At */}
-                    </p>
-                  </Table.Cell>
-                  <Table.Cell className='whitespace-nowrap'>
-                    {profile.verified} {/* Display Verified Status */}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Tooltip
-                      content='Delete Profile'
-                      placement='bottom'
-                      arrow={false}
-                    >
-                      <Button
-                        className='btn-circle ms-auto'
-                        color={'transparent'}
-                        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
-                          e.stopPropagation(); // Prevent row click
-                          console.log(`Delete profile with ID: ${profile.id}`);
-                        }}
+        <div>
+          {currentItems.length === 0 ? (
+            <Alert color='info' className='text-center'>
+              No data to show
+            </Alert>
+          ) : (
+            <>
+              <div
+                className='overflow-x-auto' // Add scrollable container with max height
+              >
+                <Table>
+                  <Table.Head>
+                    {tableHeaders.map((header) => (
+                      <Table.HeadCell
+                        key={header}
+                        className='text-base font-semibold py-3 whitespace-nowrap'
                       >
-                        <Icon
-                          icon='solar:trash-bin-minimalistic-outline'
-                          height='18'
-                        />
-                      </Button>
-                    </Tooltip>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        </div>
+                        {header}
+                      </Table.HeadCell>
+                    ))}
+                    <Table.HeadCell className='text-base font-semibold py-3 text-end'>
+                      Action
+                    </Table.HeadCell>
+                  </Table.Head>
+                  <Table.Body className='divide-y'>
+                    {currentItems.map((profile: any, index) => (
+                      <Table.Row
+                        key={index}
+                        className='cursor-pointer'
+                        onClick={() => handleRowClick(profile)}
+                      >
+                        <Table.Cell>{profile.batchStartYear}</Table.Cell>
+                        <Table.Cell>{profile.batchEndYear}</Table.Cell>
+                        <Table.Cell>
+                          {profile.educationInstitutionId}
+                        </Table.Cell>
+                        <Table.Cell>{profile.courseId}</Table.Cell>
+                        <Table.Cell>{profile.specializationId}</Table.Cell>
+                        <Table.Cell>{profile.profileId}</Table.Cell>
+                        <Table.Cell>{profile.createdAt}</Table.Cell>
+                        <Table.Cell>{profile.updatedAt}</Table.Cell>
+                        <Table.Cell>
+                          <Tooltip content='Delete Profile' placement='bottom'>
+                            <Button
+                              className='btn-circle'
+                              color={'transparent'}
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent row click
+                                console.log(
+                                  `Delete profile with ID: ${profile.profileId}`
+                                );
+                              }}
+                            >
+                              <Icon
+                                icon='solar:trash-bin-minimalistic-outline'
+                                height='18'
+                              />
+                            </Button>
+                          </Tooltip>
+                        </Table.Cell>
+                      </Table.Row>
+                    ))}
+                  </Table.Body>
+                </Table>
+              </div>
 
-        {/* Pagination */}
-        <div className='flex justify-center mt-4'>
-          <Pagination
-            currentPage={currentPage}
-            totalPages={Math.ceil(filteredProfiles.length / profilesPerPage)}
-            onPageChange={handlePageChange}
-          />
+              {/* Pagination Controls */}
+              <div className='flex justify-between items-center mt-4'>
+                <span>
+                  Showing {indexOfFirstItem + 1} to{' '}
+                  {indexOfLastItem > filteredProfiles.length
+                    ? filteredProfiles.length
+                    : indexOfLastItem}{' '}
+                  of {filteredProfiles.length} entries
+                </span>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>

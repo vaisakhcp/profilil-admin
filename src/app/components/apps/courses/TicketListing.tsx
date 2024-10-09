@@ -64,7 +64,7 @@ const TicketListing: React.FC<TicketListingProps> = ({
 
     fetchProfiles();
   }, []);
-  A;
+
   // Filter profiles based on the search term
   useEffect(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();

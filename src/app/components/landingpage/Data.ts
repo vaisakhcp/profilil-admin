@@ -108,7 +108,7 @@ const Demos: DemoTypes[] = [
     type: false,
     img: img7,
     name: 'Collages',
-    link: '/apps/colleagues',
+    link: '/apps/collages',
     include: 'Application',
   },
   {
@@ -145,13 +145,6 @@ const Demos: DemoTypes[] = [
     img: img6,
     name: 'Reported Profiles',
     link: '/apps/reported-profiles',
-    include: 'Application',
-  },
-  {
-    type: false,
-    img: img6,
-    name: 'Reported content',
-    link: '/apps/reported-content',
     include: 'Application',
   },
   {
